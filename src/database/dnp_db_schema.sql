@@ -1,0 +1,19 @@
+CREATE TABLE users (
+  user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  login TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE results (
+  user_id INTEGER NOT NULL,
+  data TEXT NOT NULL,
+  computed_at TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE auth_logs (
+  user_id INTEGER NOT NULL,
+  auth_at TIMESTAMP NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
