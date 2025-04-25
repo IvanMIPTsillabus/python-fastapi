@@ -1,23 +1,23 @@
+import contextlib
 import os
 import sqlite3
-import argon2
-import contextlib
 
 
 class Database:
-    def __init__(self):
+    def __init__(self, db_path, schema_path):
         self.__connection = None
         self.__cursor = None
-        self.__password_hasher = None
+        self.__db_path = db_path
+        self.__schema_path = schema_path
 
-    def create(self, db_path="src/database/dnp.db", schema_path="src/database/dnp_db_schema.sql"):
+    def create(self,):
         try:
-            is_it_new = os.path.exists(db_path)
-            self.__connection = sqlite3.connect(db_path)
+            is_it_new = os.path.exists(self.__db_path)
+            self.__connection = sqlite3.connect(self.__db_path)
             self.__cursor = self.__connection.cursor()
 
             if not is_it_new:
-                with open(schema_path, "r") as db_schema:
+                with open(self.__schema_path, "r") as db_schema:
                     structure = db_schema.read()
                     queries = structure.split(";")
                     for query in queries:
@@ -26,11 +26,6 @@ class Database:
                             self.__cursor.execute(query)
                     self.__connection.commit()
 
-            self.__password_hasher = argon2.PasswordHasher()
-            try:
-                yield self
-            finally:
-                self.close_connection()
         except sqlite3.Error as e:
             print(f"Ошибка при подключении к базе данных: {e}")
 
@@ -41,7 +36,7 @@ class Database:
     def add_user(self, login: str, password: str, name: str):
         try:
             sql = "INSERT INTO users (login, password, name) VALUES (?, ?, ?)"
-            self.__cursor.execute(sql, (login, self.__hash_password(password), name))
+            self.__cursor.execute(sql, (login, password, name))
             self.__connection.commit()
             return True, self.__cursor.lastrowid
         except sqlite3.Error as e:
@@ -62,6 +57,7 @@ class Database:
         try:
             sql = "UPDATE users SET password = ? WHERE user_id = ?"
             self.__cursor.execute(sql, (new_password, user_id,))
+            self.__connection.commit()
             return True
         except sqlite3.Error as e:
             print(f"Произошла ошибка при смене пароля пользователя в базе данных. Подробнее: {e}")
@@ -140,9 +136,6 @@ class Database:
         except sqlite3.Error as e:
             print(f"Произошла ошибка при получении логов входа пользователя из базы данных. Подробнее: {e}")
             return None
-
-    def __hash_password(self, password):
-        return self.__password_hasher.hash(password)
 
     @contextlib.contextmanager
     def get_session(self):
