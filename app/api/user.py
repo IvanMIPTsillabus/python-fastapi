@@ -10,15 +10,15 @@ from app.core.config import OAUTH2_SCHEME
 from app.core.security import (verify_password,
                                hash_password,
                                decode_token)
-from app.models.user import (UserHistory,
-                             UserAuthLog,
-                             UserPasswords)
+from app.models.user import (UserAuthLog,
+                             UserPasswords,
+                             UserResult)
 
 router = APIRouter()
 
 
-@router.post("/history")
-def add_history(data: UserHistory,
+@router.post("/results")
+def add_history(data: UserResult,
                 token: str = Depends(OAUTH2_SCHEME),
                 data_base: sqlite3.Connection = Depends(get_database_session)):
     user_id = decode_token(token)
@@ -34,17 +34,17 @@ def add_history(data: UserHistory,
     )
 
 
-@router.get("/history")
+@router.get("/results")
 def get_history(token: str = Depends(OAUTH2_SCHEME),
                 data_base: sqlite3.Connection = Depends(get_database_session)):
     user_id = decode_token(token)
     if user_id:
-        histories = data_base.get_user_results(user_id)
-        if histories:
-            histories_json = [UserHistory(data=history[0], timestamp=history[1]) for history in histories]
+        results = data_base.get_user_results(user_id)
+        if results:
+            results_json = [UserResult(data=result[0], timestamp=result[1]) for result in results]
         else:
-            histories_json = []
-        return histories_json
+            results_json = []
+        return results_json
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "Внутренняя ошибка"}
@@ -58,8 +58,8 @@ def get_user_info(token: str = Depends(OAUTH2_SCHEME),
     if user_id:
         user_full_data = data_base.get_user_info(user_id)
         return {
-            "login": user_full_data[0],
-            "name": user_full_data[2]
+            "username": user_full_data[0],
+            "email": user_full_data[2]
         }
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

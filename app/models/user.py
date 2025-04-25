@@ -2,11 +2,11 @@ import pydantic
 
 
 class UserInfo(pydantic.BaseModel):
-    login: str
-    name: str
+    username: str
+    email: str
 
 
-class UserHistory(pydantic.BaseModel):
+class UserResult(pydantic.BaseModel):
     data: str
     timestamp: int
 

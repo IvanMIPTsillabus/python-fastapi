@@ -1,8 +1,8 @@
 CREATE TABLE users (
   user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  login TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  name TEXT NOT NULL
+  email TEXT NOT NULL
 );
 
 CREATE TABLE results (

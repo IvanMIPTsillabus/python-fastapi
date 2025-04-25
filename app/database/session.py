@@ -35,7 +35,7 @@ class Database:
 
     def add_user(self, login: str, password: str, name: str):
         try:
-            sql = "INSERT INTO users (login, password, name) VALUES (?, ?, ?)"
+            sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)"
             self.__cursor.execute(sql, (login, password, name))
             self.__connection.commit()
             return True, self.__cursor.lastrowid
@@ -45,7 +45,7 @@ class Database:
 
     def get_user_info(self, user_id: str) -> list | None:
         try:
-            sql = "SELECT login, password, name FROM users WHERE user_id = ?"
+            sql = "SELECT username, password, email FROM users WHERE user_id = ?"
             self.__cursor.execute(sql, (user_id,))
             results = self.__cursor.fetchone()
             return results
@@ -75,7 +75,7 @@ class Database:
 
     def get_user_id(self, login: str):
         try:
-            sql = "SELECT user_id FROM users WHERE login = ?"
+            sql = "SELECT user_id FROM users WHERE username = ?"
             self.__cursor.execute(sql, (login,))
             results = self.__cursor.fetchone()
             if results:

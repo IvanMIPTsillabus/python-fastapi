@@ -22,7 +22,7 @@ def auth(user_data: OAuth2PasswordRequestForm = Depends(), database: sqlite3.Con
             if verify_password(result[1], user_data.password):
                 payload = {
                     "user_id": user_id,
-                    "name": result[2],
+                    "email": result[2],
                     "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
                 }
                 access_token = create_access_token(payload)
@@ -51,9 +51,9 @@ def auth(user_data: OAuth2PasswordRequestForm = Depends(), database: sqlite3.Con
 
 @router.post("/register")
 def register(user_data: UserRegistrationData, database: sqlite3.Connection = Depends(get_database_session)):
-    is_user_created, _ = database.get_user_id(user_data.login)
+    is_user_created, _ = database.get_user_id(user_data.username)
     if not is_user_created:
-        result, user_id = database.add_user(user_data.login, hash_password(user_data.password), user_data.name)
+        result, user_id = database.add_user(user_data.username, hash_password(user_data.password), user_data.email)
         if result:
             return UserRegistrationResponse(id=user_id)
         return JSONResponse(

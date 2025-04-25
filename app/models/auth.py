@@ -1,15 +1,10 @@
 import pydantic
 
 
-class UserAuthorizationData(pydantic.BaseModel):
-    login: str
-    password: str
-
-
 class UserRegistrationData(pydantic.BaseModel):
-    login: str
+    username: str
     password: str
-    name: str
+    email: str
 
 
 class UserRegistrationResponse(pydantic.BaseModel):
