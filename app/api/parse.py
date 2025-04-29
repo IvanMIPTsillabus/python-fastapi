@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies import get_parser
-from app.core.config import OAUTH2_SCHEME
+from app.core.security import OAUTH2_SCHEME
 from app.core.security import decode_token
 from app.models.parse import ParseRequest
 

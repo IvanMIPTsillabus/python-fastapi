@@ -1,8 +1,13 @@
 import argon2
 import jwt
-from app.core.config import SECRET_KEY, JWT_ALGO
+from fastapi.security import OAuth2PasswordBearer
+
+from app.core.config import (SECRET_KEY,
+                             JWT_ALGO,
+                             OAUTH2_TOKEN_URL)
 
 password_hasher = argon2.PasswordHasher()
+OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=OAUTH2_TOKEN_URL)
 
 
 def hash_password(password):

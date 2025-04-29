@@ -6,7 +6,7 @@ from fastapi import (APIRouter,
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies import get_database_session
-from app.core.config import OAUTH2_SCHEME
+from app.core.security import OAUTH2_SCHEME
 from app.core.security import (verify_password,
                                hash_password,
                                decode_token)
